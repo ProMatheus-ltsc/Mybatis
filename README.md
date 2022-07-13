@@ -58,6 +58,7 @@ import org.dom4j.io.SAXReader;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 class User {
@@ -70,7 +71,7 @@ interface UserMapper {
 }
 
 class TestMybatis() {
-    InputStream inputStream  = ClassLoader.getResourceAsStream("mybatis-config.xml");
+    InputStream inputStream = ClassLoader.getResourceAsStream("mybatis-config.xml");
             XmlConfigParser.parser();
     proxy =sqlSession.getMapper(UserMapper .class);
     list<User> =proxy.findAll();
@@ -99,21 +100,21 @@ class XmlConfigParser {
         使用dom4j解析mybatis - config.xml和userMapper.xml;
         document = SAXReader.read(inputStream);
         List<Element> element = document.selectNodes(Property);
-        for(element){
+        for (element) {
             //property name = driver value = com
             //name = url value = jdbc:mysql//localhost:3306
             //name = username value = root
             valueOfName = element.attributeValue(name);
             valueOfValue = element.attributeValue(value);
-            switch(valueOfName){
+            switch (valueOfName) {
                 case "driver":
                     configuration.setDriver();
                     break;
                 case "url":
                     configuration.seturl(valueOfValue);
                 case "username":
-                    
-                    
+
+
             }
         }
     }
@@ -130,6 +131,15 @@ class sqlSession {
     class clazz)
 
     {
+        1. classLoader;
+        2. 生成代理类$proxy$ implments com.UserMapper {
+        findAll() {
+            InvocationHandler.invoke();
+        }
+        class[]interfaces = {clazz};
+        MapperProxy mapperProxy = new MapperProxy();
+        Proxy.newProxyInstance(ClassLoader, interface, mapperProxy);
+    }
 
     }
 
