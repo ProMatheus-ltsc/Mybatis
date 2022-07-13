@@ -85,6 +85,7 @@ public class XmlConfigParser {
             //创建sqlMapper
             SqlMapper sqlMapper = new SqlMapper();
             sqlMapper.setId(id);
+            sqlMapper.setSql(sql);
             sqlMapper.setResultType(resultType);
             //放到configuration.sqlMappers中
             configuaration.getSqlMappers().put(id,sqlMapper);

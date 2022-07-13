@@ -1,7 +1,15 @@
 package org.mybatis.executor;
 
+import org.mybatis.configuration.Configuaration;
+import org.mybatis.configuration.SqlMapper;
+import org.mybatis.configuration.XmlConfigParser;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 //mybatis最核心的东西
 public class MapperProxy implements InvocationHandler {
@@ -36,22 +44,46 @@ public class MapperProxy implements InvocationHandler {
      * the interface method's declared return type as described above,
      * a {@code ClassCastException} will be thrown by the method
      * invocation on the proxy instance.
-     * @throws Throwable the exception to throw from the method
-     *                   invocation on the proxy instance.  The exception's type must be
-     *                   assignable either to any of the exception types declared in the
-     *                   {@code throws} clause of the interface method or to the
-     *                   unchecked exception types {@code java.lang.RuntimeException}
-     *                   or {@code java.lang.Error}.  If a checked exception is
-     *                   thrown by this method that is not assignable to any of the
-     *                   exception types declared in the {@code throws} clause of
-     *                   the interface method, then an
-     *                   {@link UndeclaredThrowableException} containing the
-     *                   exception that was thrown by this method will be thrown by the
-     *                   method invocation on the proxy instance.
-     * @see UndeclaredThrowableException
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        String methodName = method.getName();
+        System.out.println("invoke 方法名=" + methodName);
+        //得到方法所在接口的接口名 com.UserMapper
+        String interfaceName = method.getDeclaringClass().getName();
+
+        //拼出id com.UserMapper.findAll
+        String id = interfaceName + "." + methodName;
+        //从XmlConfigParser中得到Configuration
+        Configuaration configuaration = XmlConfigParser.configuaration;
+        //得到driver
+        String driver = configuaration.getDriver();
+        //得到url
+        String url = configuaration.getUrl();
+        //连接数据库的用户名
+        String username = configuaration.getUsername();
+        //连接数据库的密码
+        String password = configuaration.getPassword();
+        //得到UserMapper.xml中的<select>
+        SqlMapper sqlMapper = configuaration.getSqlMappers().get(id);
+        String sql = sqlMapper.getSql();
+        String resultType = sqlMapper.getResultType();
+
+        //连接数据库
+        //加载驱动
+        Class.forName(driver);
+
+
+        //得到连接
+        Connection connection = DriverManager.getConnection(url,username,password);
+        System.out.println(connection);
+
+        //执行sql
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        System.out.println(resultSet);
+
+
         return null;
     }
 }
