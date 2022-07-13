@@ -4,6 +4,7 @@ import org.mybatis.configuration.XmlConfigParser;
 import org.mybatis.executor.SqlSession;
 
 import java.io.InputStream;
+import java.util.List;
 
 public class TestMybatis {
     public static void main(String[] args) throws Throwable{
@@ -16,7 +17,11 @@ public class TestMybatis {
         SqlSession sqlSession = new SqlSession();
         Object proxy = sqlSession.getMapper(UserMapper.class);
         UserMapper userMapper = (UserMapper) proxy;
-        userMapper.findAll();//调用mapperProxy.invoke()
+        List<User> list = userMapper.findAll();
+        //调用mapperProxy.invoke()
+        System.out.println(list);
+
+
 
 
     }
