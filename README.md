@@ -46,7 +46,69 @@ driver, url, username, password
 ## 准备工作
 
 创建表, 创建moudle, 添加mysql驱动, dom4j依赖.
+## 建包
 
+```java
+
+package com
+
+import java.lang.reflect.InvocationHandler;
+
+class User {
+    Integer id;
+    String username;
+}
+
+interface UserMapper {
+    List<user> findAll();
+}
+
+class TestMybatis() {
+            XmlConfigParser.parser();
+    proxy =sqlSession.getMapper(UserMapper .class);
+    list<User> =proxy.findAll();
+}
+    UserMapper.xml
+            <select id = com.UserMapper.findAll resultType=com.user>
+        select*from user
+        mybatis-config.xml
+<property name="driver"value="">
+<mappers>
+<mapper resource=userMapper.xml>
+</mappers>
+        package org.mybatis.configuaration
+
+class SqlMapper {
+    String id, sql, ResultType;
+}
+
+class Configuration {
+    String driver, url, username, password;
+    HashMap<id, sqlMapper> sqlMappers;
+}
+
+class XmlConfigParser {
+    parser() {
+        使用dom4j解析mybatis - config.xml和userMapper.xml
+    }
+}
+        
+package org.mybatis.executor
+
+class sqlSession {
+    clazz = UserMapper.class
+    Object getMapper(class clazz){
+
+    }
+
+    class MapperProxy implements InvocationHandler{
+        invoke(){
+            1. 从XmlConfigParser.configuration中取出url, 连接数据库;
+            2. 找到sql, resultSet, list<User>;
+        }
+    }
+}
+```
 ## 实现
 
 Java中都是类
@@ -105,6 +167,12 @@ invoke(method){
 
 }
 ```
+
+### 具体实现
+1. 解析xml
+2. 动态代理
+3. 封装JDBC
+
 
 
 
