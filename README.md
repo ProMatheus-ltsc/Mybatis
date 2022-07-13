@@ -52,7 +52,13 @@ driver, url, username, password
 
 package com
 
+import javafx.beans.property.Property;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+
+import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
+import java.util.List;
 
 class User {
     Integer id;
@@ -64,6 +70,7 @@ interface UserMapper {
 }
 
 class TestMybatis() {
+    InputStream inputStream  = ClassLoader.getResourceAsStream("mybatis-config.xml");
             XmlConfigParser.parser();
     proxy =sqlSession.getMapper(UserMapper .class);
     list<User> =proxy.findAll();
@@ -88,23 +95,48 @@ class Configuration {
 }
 
 class XmlConfigParser {
-    parser() {
-        使用dom4j解析mybatis - config.xml和userMapper.xml
+    parser(InputStream inputStream) {
+        使用dom4j解析mybatis - config.xml和userMapper.xml;
+        document = SAXReader.read(inputStream);
+        List<Element> element = document.selectNodes(Property);
+        for(element){
+            //property name = driver value = com
+            //name = url value = jdbc:mysql//localhost:3306
+            //name = username value = root
+            valueOfName = element.attributeValue(name);
+            valueOfValue = element.attributeValue(value);
+            switch(valueOfName){
+                case "driver":
+                    configuration.setDriver();
+                    break;
+                case "url":
+                    configuration.seturl(valueOfValue);
+                case "username":
+                    
+                    
+            }
+        }
     }
 }
         
 package org.mybatis.executor
 
 class sqlSession {
-    clazz = UserMapper.class
-    Object getMapper(class clazz){
+    clazz =UserMapper .
+
+    class
+    Object getMapper(
+
+    class clazz)
+
+    {
 
     }
 
-    class MapperProxy implements InvocationHandler{
-        invoke(){
+    class MapperProxy implements InvocationHandler {
+        invoke() {
             1. 从XmlConfigParser.configuration中取出url, 连接数据库;
-            2. 找到sql, resultSet, list<User>;
+            2. 找到sql, resultSet, list < User >;
         }
     }
 }
@@ -169,7 +201,7 @@ invoke(method){
 ```
 
 ### 具体实现
-1. 解析xml
+1. 解析xml--------saxReader读取文件
 2. 动态代理
 3. 封装JDBC
 
