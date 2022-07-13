@@ -1,15 +1,15 @@
 package org.mybatis.executor;
 
+import com.User;
 import org.mybatis.configuration.Configuaration;
 import org.mybatis.configuration.SqlMapper;
 import org.mybatis.configuration.XmlConfigParser;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.ArrayList;
 
 //mybatis最核心的东西
 public class MapperProxy implements InvocationHandler {
@@ -66,6 +66,10 @@ public class MapperProxy implements InvocationHandler {
         String password = configuaration.getPassword();
         //得到UserMapper.xml中的<select>
         SqlMapper sqlMapper = configuaration.getSqlMappers().get(id);
+        if(sqlMapper == null){
+            return null;
+
+        }
         String sql = sqlMapper.getSql();
         String resultType = sqlMapper.getResultType();
 
@@ -83,7 +87,33 @@ public class MapperProxy implements InvocationHandler {
         ResultSet resultSet = preparedStatement.executeQuery();
         System.out.println(resultSet);
 
+        //将结果集转成list
+        //集合不指定放的数据的类型, 可以放任何对象
+        ArrayList userList = new ArrayList<>();
 
-        return null;
+        int row = 0;
+        while(resultSet.next()){
+            row++;
+            //创建对象
+            Class clazz = Class.forName(resultType);
+            Object object = clazz.newInstance();
+            //把某个列的值放到对应的属性上
+            //表id, username两个列
+            //对象is, username属性上
+            //得到更的列的信息
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            //遍历列
+            for(int columnIndex = 1; columnIndex <= columnCount; columnIndex++){
+                String columnName = metaData.getColumnName(columnIndex);
+                System.out.println("columnName=" + columnName);
+                //创建属性field
+                Field field = clazz.getDeclaredField(columnName);
+                field.setAccessible(true);
+                field.set(object,resultSet.getObject(columnName));
+            }
+            userList.add(object);
+        }
+        return userList;
     }
 }
